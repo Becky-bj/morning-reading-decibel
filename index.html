@@ -65,16 +65,21 @@
     display:flex; align-items:center; gap:8px; max-width:92vw}
   #badge.low{background:#ff5f56}
   #badge.loud{background:#ff9500}
+  #badge.off{background:rgba(255,255,255,.22)}
   #badge .em{font-size:1.2em}
 
-  /* 主按钮：设置早读时间（醒目、脉冲吸引点击） */
-  .main-btn{margin-top:26px; border:none; border-radius:999px; padding:15px 40px; font-size:1.12rem;
+  /* 主按钮：开启麦克风 / 设置早读时间（醒目、脉冲吸引点击） */
+  .main-btn{margin-top:18px; border:none; border-radius:999px; padding:15px 40px; font-size:1.12rem;
     font-weight:800; cursor:pointer; color:#4a2b00; letter-spacing:1px;
     background:linear-gradient(135deg,#ffd24a,#f6a623 55%,#ff7a18);
     box-shadow:0 8px 22px rgba(246,166,35,.55); animation:pulseBtn 1.8s ease-in-out infinite}
   @keyframes pulseBtn{0%,100%{transform:scale(1); box-shadow:0 8px 22px rgba(246,166,35,.5)}
     50%{transform:scale(1.06); box-shadow:0 12px 30px rgba(246,166,35,.75)}}
   .main-btn:active{transform:scale(.97); animation:none}
+  .main-btn.mic{background:linear-gradient(135deg,#a0e7ff,#4aa8ff 55%,#2f7bff); color:#0a2a55;
+    box-shadow:0 8px 22px rgba(74,168,255,.55)}
+  #micBtn{display:none}
+  #micBtn.show{display:inline-block}
   .btn-hint{margin-top:14px; font-size:.82rem; opacity:.9; letter-spacing:1px;
     background:rgba(255,255,255,.14); padding:6px 16px; border-radius:999px}
 
@@ -89,7 +94,7 @@
   .glow{position:absolute; inset:0; z-index:0; pointer-events:none; opacity:0;
     background:radial-gradient(circle at 50% 42%, rgba(255,176,48,.55), rgba(255,120,24,.12) 45%, transparent 72%)}
 
-  /* 全屏分散弹跳粒子（铺满页面、随音量剧烈起伏） */
+  /* 全屏分散弹跳粒子（铺满页面、随音量剧烈起伏，未授权时也有明显弹跳） */
   .particles{position:absolute; inset:0; z-index:1; overflow:hidden; pointer-events:none}
   .particle{position:absolute; border-radius:50%; will-change:transform,opacity;
     box-shadow:0 0 14px rgba(255,255,255,.3), inset -2px -3px 6px rgba(0,0,0,.2)}
@@ -113,12 +118,12 @@
   .pbtns button.ghost{background:rgba(255,255,255,.18); color:#fff}
   #diag{font-size:.72rem; opacity:.75; margin-top:12px; line-height:1.5; word-break:break-all}
 
-  /* 授权遮罩 */
+  /* 授权遮罩（可点空白处关闭，退回主界面） */
   #gate{position:fixed; inset:0; background:linear-gradient(165deg,#5b3a8e,#8a6cc0);
     display:flex; align-items:center; justify-content:center; z-index:100; padding:20px}
   #gate.hide{display:none}
   .gate-box{background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.2); border-radius:20px;
-    padding:30px 26px; text-align:center; max-width:360px; box-shadow:0 12px 40px rgba(0,0,0,.35)}
+    padding:30px 26px; text-align:center; max-width:360px; box-shadow:0 12px 40px rgba(0,0,0,.35); cursor:default}
   .gate-icon{font-size:3.2rem; animation:pulse 1.6s ease-in-out infinite}
   @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
   .gate-title{font-size:1.25rem; font-weight:800; margin:10px 0 6px}
@@ -126,6 +131,7 @@
   #gateBtn{margin-top:18px; width:100%; border:none; border-radius:12px; padding:13px;
     font-size:1rem; font-weight:800; cursor:pointer; background:#f6a623; color:#4a2b00}
   .gate-tip{font-size:.76rem; opacity:.85; margin-top:14px; line-height:1.55; text-align:left; word-break:break-all}
+  .gate-skip{margin-top:10px; font-size:.78rem; opacity:.8; cursor:pointer; text-decoration:underline}
 </style>
 </head>
 <body>
@@ -153,9 +159,10 @@
     <div class="bar"><div id="cursor"></div></div>
     <div class="ticks"><span>50</span><span>70</span><span>90</span><span>110</span></div>
   </div>
-  <div id="badge"><span class="em">🎙</span><span id="badgeText">正在检测…</span></div>
+  <div id="badge" class="off"><span class="em">🎙</span><span id="badgeText">正在检测麦克风…</span></div>
+  <button id="micBtn" class="main-btn mic">🎤 开启麦克风</button>
   <button id="timerBtn" class="main-btn">⏱ 设置早读时间</button>
-  <div class="btn-hint">👆 点此设置早读时长与达标音量</div>
+  <div class="btn-hint">👆 点「开启麦克风」测分贝；点「设置早读时间」定时长与达标音量</div>
   </main>
 
   <!-- 设置抽屉 -->
@@ -179,7 +186,7 @@
     </div>
   </div>
 
-  <!-- 授权遮罩 -->
+  <!-- 授权遮罩（可关闭） -->
   <div id="gate">
     <div class="gate-box">
       <div class="gate-icon">🎤</div>
@@ -187,6 +194,7 @@
       <div class="gate-sub" id="gateSub">请点击「允许」以开始早读分贝检测</div>
       <button id="gateBtn">点击开启麦克风</button>
       <div class="gate-tip" id="gateTip"></div>
+      <div class="gate-skip" id="gateSkip">暂不开启，先看主界面 →</div>
     </div>
   </div>
 
@@ -197,12 +205,13 @@
   const dbInt=$('dbInt'), d0=$('d0'), d1=$('d1'), d2=$('d2');
   const cursor=$('cursor'), badge=$('badge'), badgeText=$('badgeText');
   const gate=$('gate'), gateTitle=$('gateTitle'), gateSub=$('gateSub'),
-        gateBtn=$('gateBtn'), gateTip=$('gateTip');
+        gateBtn=$('gateBtn'), gateTip=$('gateTip'), gateSkip=$('gateSkip');
   const gearBtn=$('gearBtn'), panel=$('panel'), closePanel=$('closePanel');
   const thRange=$('thRange'), thVal=$('thVal'), dur=$('dur'), diag=$('diag');
   const timerChip=$('timerChip'), clock=$('clock');
   const startTimer=$('startTimer'), stopTimer=$('stopTimer');
-  const timerBtn=$('timerBtn'), particlesWrap=$('particles'), glow=$('glow');
+  const timerBtn=$('timerBtn'), micBtn=$('micBtn'),
+        particlesWrap=$('particles'), glow=$('glow');
 
   // ====== 状态 ======
   let audioCtx=null, analyser=null, micStream=null, dataArr=null, rafId=null;
@@ -215,7 +224,7 @@
   const particles=[];
   for(let i=0;i<PARTICLE_N;i++){
     const p=document.createElement('div'); p.className='particle';
-    const base=12+Math.random()*26;            // 直径 12~38
+    const base=14+Math.random()*30;            // 直径 14~44，更大更明显
     p.style.width=p.style.height=base+'px';
     const left=4+Math.random()*90;             // 水平 4%~94%
     const top=6+Math.random()*84;              // 垂直 6%~90%
@@ -227,11 +236,22 @@
   }
 
   // ====== 提示函数 ======
-  function gateFail(msg){ gateTitle.textContent='麦克风开启失败'; gateSub.textContent='';
-    gateBtn.textContent='重试'; gateTip.innerHTML='❌ '+msg; }
-  function gateNeed(msg){ gateTitle.textContent='需要你的授权'; gateSub.textContent=msg;
-    gateBtn.textContent='点击开启麦克风'; gateTip.innerHTML=
-    '若地址栏出现 🎤 图标请选「允许」。本页必须通过 <b>https</b> 或 <b>localhost</b> 打开，否则浏览器会禁用麦克风。'; }
+  function setBadgeOff(){
+    micBtn.classList.add('show');
+    badge.className='off';
+    badgeText.textContent='未开启麦克风，点「开启麦克风」测分贝';
+  }
+  function gatePrompt(){
+    gateTitle.textContent='需要麦克风权限';
+    gateSub.textContent='点击下方按钮开启；也可点「先看主界面」先浏览';
+    gateBtn.textContent='点击开启麦克风';
+    gateTip.innerHTML='必须通过 <b>https</b> 或 <b>localhost</b> 打开，否则浏览器会禁用麦克风。';
+  }
+  function gateFailMsg(msg){
+    gateTitle.textContent='麦克风开启失败'; gateSub.textContent='';
+    gateBtn.textContent='重试';
+    gateTip.innerHTML='❌ '+msg+'<br>若地址栏出现 🎤 图标请选「允许」。';
+  }
 
   function errHint(n){
     switch(n){
@@ -248,7 +268,7 @@
   async function initMic(){
     if(micOn) return;
     if(!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)){
-      gateFail('当前页面地址 <b>'+location.origin+'</b> 不是 https 也不是 localhost，浏览器已禁用麦克风 API。');
+      gateFailMsg('当前页面地址 <b>'+location.origin+'</b> 不是 https 也不是 localhost，浏览器已禁用麦克风 API。');
       return;
     }
     try{
@@ -264,11 +284,16 @@
       dataArr=new Float32Array(analyser.fftSize);
       micOn=true;
       gate.classList.add('hide');
+      micBtn.classList.remove('show');
+      badge.className='';
     }catch(err){
       const name=err.name||err.message;
       const hint=errHint(name);
-      if(name==='NotAllowedError'||name==='SecurityError'){ gateNeed('授权被拦截，请点击下方按钮并在弹窗中选「允许」'); }
-      else gateFail(hint);
+      if(name==='NotAllowedError'||name==='SecurityError'){
+        gatePrompt(); // 保留遮罩让用户重试
+      } else {
+        gateFailMsg(hint);
+      }
     }
   }
 
@@ -297,18 +322,19 @@
       else { badge.className='low'; badgeText.textContent='🔊 音量过低！早读要大声，低于阈值 '+threshold+' dB'; }
     }
     // 全屏散落粒子：弹跳幅度随音量剧烈变化，错峰成起伏；背景随音量发光
+    // 未授权/静音时 norm 仍>0（smoothed 初始55），保证小球明显持续弹跳
     const norm=Math.max(0,Math.min(1,(smoothed-MIN)/(110-MIN)));
-    const amp=26+norm*210;           // 大幅弹跳，声音越大跳得越高
-    const freq=1.2+norm*2.4;         // 声音越大弹得越急
+    const amp=46+norm*200;           // 基础46px，确保待机也明显跳动
+    const freq=1.3+norm*2.4;         // 声音越大弹得越急
     for(let i=0;i<particles.length;i++){
       const pt=particles[i];
       const w=0.5+0.5*Math.sin(now*freq + pt.phase);   // 0~1，错峰起伏
       const up=w*amp*pt.k;
-      const sc=0.5+0.7*norm+0.18*w;                    // 声音大时整体放大
+      const sc=0.6+0.7*norm+0.18*w;                    // 声音大时整体放大
       pt.el.style.transform='translateY('+(-up)+'px) scale('+sc.toFixed(3)+')';
-      pt.el.style.opacity=(0.28+0.6*norm).toFixed(3);
+      pt.el.style.opacity=(0.45+0.5*norm).toFixed(3);   // 待机也有 0.45 透明度
     }
-    glow.style.opacity=(0.04+norm*0.5).toFixed(3);     // 背景暖光随音量脉动
+    glow.style.opacity=(0.05+norm*0.5).toFixed(3);     // 背景暖光随音量脉动
     rafId=requestAnimationFrame(loop);
   }
 
@@ -347,11 +373,15 @@
   thRange.addEventListener('input',()=>{ threshold=parseInt(thRange.value,10); thVal.textContent=threshold; });
   gearBtn.addEventListener('click',()=>panel.classList.add('show'));
   timerBtn.addEventListener('click',()=>panel.classList.add('show'));
+  micBtn.addEventListener('click',initMic);
   closePanel.addEventListener('click',()=>panel.classList.remove('show'));
   panel.addEventListener('click',e=>{ if(e.target===panel) panel.classList.remove('show'); });
   startTimer.addEventListener('click',startCountdown);
   stopTimer.addEventListener('click',stopCountdown);
   gateBtn.addEventListener('click',initMic);
+  // 点遮罩空白处（非卡片）关闭遮罩，退回主界面，仍可手动开启麦克风
+  gate.addEventListener('click',e=>{ if(e.target===gate){ gate.classList.add('hide'); setBadgeOff(); } });
+  gateSkip.addEventListener('click',()=>{ gate.classList.add('hide'); setBadgeOff(); });
 
   // 首次交互兜底（部分浏览器要求手势才弹授权）
   let bound=false;
@@ -362,9 +392,10 @@
   }
 
   window.addEventListener('load',()=>{
-    loop();            // 启动粒子动画（未授权时也有轻微弹跳）
-    initMic();
+    loop();            // 启动粒子动画（未授权时也有明显弹跳）
+    initMic();         // 尝试自动授权
     bindGesture();
+    setTimeout(()=>{ if(!micOn) setBadgeOff(); }, 500); // 若未授权，确保主界面提示清晰
   });
 })();
 </script>
