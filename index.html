@@ -32,6 +32,10 @@
     display:flex; align-items:center; justify-content:center; backdrop-filter:blur(4px)}
   #gearBtn:active{transform:scale(.94)}
 
+  /* 主舞台：主内容置于上层，弹跳粒子在背景层 */
+  .stage{position:relative; z-index:2; flex:1; width:100%;
+    display:flex; flex-direction:column; align-items:center; justify-content:center}
+
   /* 主显示 */
   .dbnum{font-size:min(38vw,11rem); font-weight:800; color:#f6a623; line-height:1;
     text-shadow:0 6px 24px rgba(0,0,0,.25); display:flex; align-items:baseline; justify-content:center}
@@ -63,18 +67,32 @@
   #badge.loud{background:#ff9500}
   #badge .em{font-size:1.2em}
 
-  /* 主按钮：设置早读时间 */
-  .main-btn{margin-top:30px; border:none; border-radius:999px; padding:11px 26px; font-size:1rem;
-    font-weight:700; cursor:pointer; background:rgba(255,255,255,.18); color:#fff; backdrop-filter:blur(4px);
-    letter-spacing:1px; box-shadow:0 4px 12px rgba(0,0,0,.2)}
-  .main-btn:active{transform:scale(.96)}
+  /* 主按钮：设置早读时间（醒目、脉冲吸引点击） */
+  .main-btn{margin-top:26px; border:none; border-radius:999px; padding:15px 40px; font-size:1.12rem;
+    font-weight:800; cursor:pointer; color:#4a2b00; letter-spacing:1px;
+    background:linear-gradient(135deg,#ffd24a,#f6a623 55%,#ff7a18);
+    box-shadow:0 8px 22px rgba(246,166,35,.55); animation:pulseBtn 1.8s ease-in-out infinite}
+  @keyframes pulseBtn{0%,100%{transform:scale(1); box-shadow:0 8px 22px rgba(246,166,35,.5)}
+    50%{transform:scale(1.06); box-shadow:0 12px 30px rgba(246,166,35,.75)}}
+  .main-btn:active{transform:scale(.97); animation:none}
+  .btn-hint{margin-top:14px; font-size:.82rem; opacity:.9; letter-spacing:1px;
+    background:rgba(255,255,255,.14); padding:6px 16px; border-radius:999px}
 
-  /* 弹跳小球 */
-  #ball{position:absolute; left:50%; bottom:120px; transform:translateX(-50%); width:56px; height:56px;
-    border-radius:50%; background:radial-gradient(circle at 34% 30%, #fff3c4, #f6a623 58%, #c96a1e);
-    box-shadow:0 8px 16px rgba(0,0,0,.3); will-change:bottom}
-  #ground{position:absolute; left:50%; bottom:106px; transform:translateX(-50%); width:92px; height:12px;
-    border-radius:50%; background:rgba(0,0,0,.22); filter:blur(3px); will-change:transform,opacity}
+  /* 顶部轻量标题 */
+  .topbar{position:absolute; top:16px; left:14px; font-size:.92rem; letter-spacing:4px;
+    opacity:.85; font-weight:700; display:flex; align-items:center; gap:7px; white-space:nowrap}
+  .topbar .dot{width:9px; height:9px; border-radius:50%; background:#f6a623;
+    box-shadow:0 0 12px #f6a623; animation:blink 1.4s ease-in-out infinite}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+  /* 背景脉动光晕（随音量强弱发光，增强页面活力） */
+  .glow{position:absolute; inset:0; z-index:0; pointer-events:none; opacity:0;
+    background:radial-gradient(circle at 50% 42%, rgba(255,176,48,.55), rgba(255,120,24,.12) 45%, transparent 72%)}
+
+  /* 全屏分散弹跳粒子（铺满页面、随音量剧烈起伏） */
+  .particles{position:absolute; inset:0; z-index:1; overflow:hidden; pointer-events:none}
+  .particle{position:absolute; border-radius:50%; will-change:transform,opacity;
+    box-shadow:0 0 14px rgba(255,255,255,.3), inset -2px -3px 6px rgba(0,0,0,.2)}
 
   /* 设置抽屉 */
   #panel{position:absolute; inset:0; background:rgba(20,12,40,.55); backdrop-filter:blur(6px);
@@ -117,8 +135,15 @@
   <div class="bubble" style="width:90px;height:90px;left:18%;bottom:18%;animation-delay:4s"></div>
   <div class="bubble" style="width:40px;height:40px;right:20%;bottom:26%;animation-delay:1s"></div>
   <div class="bubble" style="width:26px;height:26px;left:45%;top:8%;animation-delay:3s"></div>
+  <div class="bubble" style="width:54px;height:54px;left:62%;top:42%;animation-delay:5s"></div>
+  <div class="bubble" style="width:34px;height:34px;right:9%;bottom:9%;animation-delay:6s"></div>
+  <div class="bubble" style="width:72px;height:72px;left:32%;top:58%;animation-delay:3.5s"></div>
 
+  <div class="glow"></div>
+  <div id="particles" class="particles"></div>
+  <main class="stage">
   <div id="timerChip">⏱ <span id="clock">00:00</span></div>
+  <div class="topbar"><span class="dot"></span>早读分贝</div>
   <button id="gearBtn" title="设置">⚙️</button>
 
   <!-- 主界面 -->
@@ -130,10 +155,8 @@
   </div>
   <div id="badge"><span class="em">🎙</span><span id="badgeText">正在检测…</span></div>
   <button id="timerBtn" class="main-btn">⏱ 设置早读时间</button>
-
-  <!-- 弹跳小球（随音量大小上下弹跳） -->
-  <div id="ball"></div>
-  <div id="ground"></div>
+  <div class="btn-hint">👆 点此设置早读时长与达标音量</div>
+  </main>
 
   <!-- 设置抽屉 -->
   <div id="panel">
@@ -179,8 +202,7 @@
   const thRange=$('thRange'), thVal=$('thVal'), dur=$('dur'), diag=$('diag');
   const timerChip=$('timerChip'), clock=$('clock');
   const startTimer=$('startTimer'), stopTimer=$('stopTimer');
-  const timerBtn=$('timerBtn'), ball=$('ball'), ground=$('ground');
-  const BASE_BOTTOM=120; // 小球静止时离底部高度(px)
+  const timerBtn=$('timerBtn'), particlesWrap=$('particles'), glow=$('glow');
 
   // ====== 状态 ======
   let audioCtx=null, analyser=null, micStream=null, dataArr=null, rafId=null;
@@ -188,7 +210,21 @@
   let timerId=null, timerRemain=0, timerRunning=false;
   const MIN=40, MAX=120; // 色条映射范围（刻度 50/70/90/110 均匀）
 
-  // ====== 气泡已由 CSS 生成 ======
+  // ====== 生成全屏分散弹跳粒子 ======
+  const PARTICLE_N=24;
+  const particles=[];
+  for(let i=0;i<PARTICLE_N;i++){
+    const p=document.createElement('div'); p.className='particle';
+    const base=12+Math.random()*26;            // 直径 12~38
+    p.style.width=p.style.height=base+'px';
+    const left=4+Math.random()*90;             // 水平 4%~94%
+    const top=6+Math.random()*84;              // 垂直 6%~90%
+    p.style.left=left+'%'; p.style.top=top+'%';
+    const hue=Math.floor(15+Math.random()*115);// 橙红~绿 随机散布，呼应音量条
+    p.style.background='radial-gradient(circle at 34% 30%, rgba(255,255,255,.95), hsl('+hue+',85%,55%) 58%, hsl('+hue+',85%,38%))';
+    particlesWrap.appendChild(p);
+    particles.push({el:p, phase:Math.random()*Math.PI*2, k:0.6+Math.random()*0.7, base});
+  }
 
   // ====== 提示函数 ======
   function gateFail(msg){ gateTitle.textContent='麦克风开启失败'; gateSub.textContent='';
@@ -260,15 +296,19 @@
       else if(v>=threshold){ badge.className=''; badgeText.textContent='✅ 音量达标！继续保持 ('+intPart+' dB)'; }
       else { badge.className='low'; badgeText.textContent='🔊 音量过低！早读要大声，低于阈值 '+threshold+' dB'; }
     }
-    // 弹跳小球：弹跳高度随音量大小变化（声音越大跳得越高）
+    // 全屏散落粒子：弹跳幅度随音量剧烈变化，错峰成起伏；背景随音量发光
     const norm=Math.max(0,Math.min(1,(smoothed-MIN)/(110-MIN)));
-    const amp=15+norm*175;          // 弹跳幅度随音量增大
-    const freq=2.2+norm*3.2;        // 声音越大弹得越急
-    const bounce=Math.abs(Math.sin(now*freq))*amp;
-    ball.style.bottom=(BASE_BOTTOM+bounce)+'px';
-    const s=1-norm*0.5, op=0.30-norm*0.18;
-    ground.style.transform='translateX(-50%) scaleX('+s+')';
-    ground.style.opacity=op;
+    const amp=26+norm*210;           // 大幅弹跳，声音越大跳得越高
+    const freq=1.2+norm*2.4;         // 声音越大弹得越急
+    for(let i=0;i<particles.length;i++){
+      const pt=particles[i];
+      const w=0.5+0.5*Math.sin(now*freq + pt.phase);   // 0~1，错峰起伏
+      const up=w*amp*pt.k;
+      const sc=0.5+0.7*norm+0.18*w;                    // 声音大时整体放大
+      pt.el.style.transform='translateY('+(-up)+'px) scale('+sc.toFixed(3)+')';
+      pt.el.style.opacity=(0.28+0.6*norm).toFixed(3);
+    }
+    glow.style.opacity=(0.04+norm*0.5).toFixed(3);     // 背景暖光随音量脉动
     rafId=requestAnimationFrame(loop);
   }
 
@@ -322,7 +362,7 @@
   }
 
   window.addEventListener('load',()=>{
-    loop();            // 启动小球动画（未授权时也有轻微待机弹跳）
+    loop();            // 启动粒子动画（未授权时也有轻微弹跳）
     initMic();
     bindGesture();
   });
