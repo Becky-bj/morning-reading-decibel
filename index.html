@@ -14,29 +14,24 @@
     display:flex; flex-direction:column; align-items:center; justify-content:center;
     position:relative; user-select:none; -webkit-user-select:none;
   }
-  /* 气泡背景 */
   .bubble{position:absolute; border-radius:50%; background:rgba(255,255,255,.07);
           animation:float 14s ease-in-out infinite; pointer-events:none}
   @keyframes float{0%,100%{transform:translateY(0) translateX(0)}50%{transform:translateY(-26px) translateX(12px)}}
 
-  /* 计时小徽标（仅计时中显示） */
   #timerChip{position:absolute; top:14px; left:50%; transform:translateX(-50%);
     background:rgba(255,255,255,.18); backdrop-filter:blur(4px);
     padding:6px 16px; border-radius:999px; font-size:.95rem; font-weight:700;
     display:none; align-items:center; gap:6px; letter-spacing:1px}
   #timerChip.show{display:inline-flex}
 
-  /* 设置按钮 */
   #gearBtn{position:absolute; top:12px; right:12px; width:42px; height:42px; border-radius:50%;
     background:rgba(255,255,255,.15); border:none; color:#fff; font-size:1.25rem; cursor:pointer;
     display:flex; align-items:center; justify-content:center; backdrop-filter:blur(4px)}
   #gearBtn:active{transform:scale(.94)}
 
-  /* 主舞台：主内容置于上层，弹跳粒子在背景层 */
   .stage{position:relative; z-index:2; flex:1; width:100%;
     display:flex; flex-direction:column; align-items:center; justify-content:center}
 
-  /* 主显示 */
   .dbnum{font-size:min(38vw,11rem); font-weight:800; color:#f6a623; line-height:1;
     text-shadow:0 6px 24px rgba(0,0,0,.25); display:flex; align-items:baseline; justify-content:center}
   .dbdec{font-size:.32em; font-weight:800; color:#f6a623; opacity:.85; display:inline-block;
@@ -45,9 +40,14 @@
   .dbdec span:nth-child(2){animation-duration:1.2s; animation-delay:.08s}
   .dbdec span:nth-child(3){animation-duration:.95s; animation-delay:.16s}
   @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-.35em)}}
-  .dblabel{font-size:1.15rem; letter-spacing:6px; margin:6px 0 26px; opacity:.95; text-indent:6px}
+  .dblabel{font-size:1.15rem; letter-spacing:6px; margin:6px 0 22px; opacity:.95; text-indent:6px}
 
-  /* 渐变音量条 */
+  /* 实时诊断状态条 */
+  #status{font-size:.72rem; opacity:.85; margin:-8px 0 14px; min-height:1.1em; letter-spacing:.3px;
+    text-align:center; max-width:92vw; line-height:1.4}
+  #status.ok{color:#bff7c5}
+  #status.warn{color:#ffe08a}
+
   .barwrap{width:min(86vw,560px); position:relative}
   .bar{height:16px; border-radius:999px; overflow:visible; position:relative;
     background:linear-gradient(90deg,#43c94e 0%,#a8d84a 22%,#f7d51d 38%,#f6a623 55%,#c96a1e 74%,#6e3b12 100%);
@@ -59,8 +59,7 @@
   .ticks span:first-child{transform:none}
   .ticks span:last-child{transform:translateX(-100%)}
 
-  /* 状态徽章 */
-  #badge{margin-top:34px; padding:12px 26px; border-radius:12px; font-size:1.15rem; font-weight:700;
+  #badge{margin-top:30px; padding:12px 26px; border-radius:12px; font-size:1.15rem; font-weight:700;
     background:#34c759; color:#fff; box-shadow:0 4px 14px rgba(0,0,0,.25);
     display:flex; align-items:center; gap:8px; max-width:92vw}
   #badge.low{background:#ff5f56}
@@ -68,7 +67,6 @@
   #badge.off{background:rgba(255,255,255,.22)}
   #badge .em{font-size:1.2em}
 
-  /* 主按钮：开启麦克风 / 设置早读时间（醒目、脉冲吸引点击） */
   .main-btn{margin-top:18px; border:none; border-radius:999px; padding:15px 40px; font-size:1.12rem;
     font-weight:800; cursor:pointer; color:#4a2b00; letter-spacing:1px;
     background:linear-gradient(135deg,#ffd24a,#f6a623 55%,#ff7a18);
@@ -83,23 +81,19 @@
   .btn-hint{margin-top:14px; font-size:.82rem; opacity:.9; letter-spacing:1px;
     background:rgba(255,255,255,.14); padding:6px 16px; border-radius:999px}
 
-  /* 顶部轻量标题 */
   .topbar{position:absolute; top:16px; left:14px; font-size:.92rem; letter-spacing:4px;
     opacity:.85; font-weight:700; display:flex; align-items:center; gap:7px; white-space:nowrap}
   .topbar .dot{width:9px; height:9px; border-radius:50%; background:#f6a623;
     box-shadow:0 0 12px #f6a623; animation:blink 1.4s ease-in-out infinite}
   @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 
-  /* 背景脉动光晕（随音量强弱发光，增强页面活力） */
   .glow{position:absolute; inset:0; z-index:0; pointer-events:none; opacity:0;
     background:radial-gradient(circle at 50% 42%, rgba(255,176,48,.55), rgba(255,120,24,.12) 45%, transparent 72%)}
 
-  /* 全屏分散弹跳粒子（铺满页面、随音量剧烈起伏，未授权时也有明显弹跳） */
   .particles{position:absolute; inset:0; z-index:1; overflow:hidden; pointer-events:none}
   .particle{position:absolute; border-radius:50%; will-change:transform,opacity;
     box-shadow:0 0 14px rgba(255,255,255,.3), inset -2px -3px 6px rgba(0,0,0,.2)}
 
-  /* 设置抽屉 */
   #panel{position:absolute; inset:0; background:rgba(20,12,40,.55); backdrop-filter:blur(6px);
     display:none; align-items:center; justify-content:center; z-index:50; padding:20px}
   #panel.show{display:flex}
@@ -118,7 +112,6 @@
   .pbtns button.ghost{background:rgba(255,255,255,.18); color:#fff}
   #diag{font-size:.72rem; opacity:.75; margin-top:12px; line-height:1.5; word-break:break-all}
 
-  /* 授权遮罩（可点空白处关闭，退回主界面） */
   #gate{position:fixed; inset:0; background:linear-gradient(165deg,#5b3a8e,#8a6cc0);
     display:flex; align-items:center; justify-content:center; z-index:100; padding:20px}
   #gate.hide{display:none}
@@ -135,7 +128,6 @@
 </style>
 </head>
 <body>
-  <!-- 气泡 -->
   <div class="bubble" style="width:120px;height:120px;left:8%;top:12%"></div>
   <div class="bubble" style="width:60px;height:60px;right:14%;top:22%;animation-delay:2s"></div>
   <div class="bubble" style="width:90px;height:90px;left:18%;bottom:18%;animation-delay:4s"></div>
@@ -155,6 +147,7 @@
   <!-- 主界面 -->
   <div class="dbnum"><span id="dbInt">--</span><span class="dbdec">.<span id="d0">0</span><span id="d1">0</span><span id="d2">0</span></span></div>
   <div class="dblabel">分贝（近似值）</div>
+  <div id="status" class="warn">未开启麦克风</div>
   <div class="barwrap">
     <div class="bar"><div id="cursor"></div></div>
     <div class="ticks"><span>50</span><span>70</span><span>90</span><span>110</span></div>
@@ -203,7 +196,7 @@
   "use strict";
   const $=id=>document.getElementById(id);
   const dbInt=$('dbInt'), d0=$('d0'), d1=$('d1'), d2=$('d2');
-  const cursor=$('cursor'), badge=$('badge'), badgeText=$('badgeText');
+  const cursor=$('cursor'), badge=$('badge'), badgeText=$('badgeText'), statusEl=$('status');
   const gate=$('gate'), gateTitle=$('gateTitle'), gateSub=$('gateSub'),
         gateBtn=$('gateBtn'), gateTip=$('gateTip'), gateSkip=$('gateSkip');
   const gearBtn=$('gearBtn'), panel=$('panel'), closePanel=$('closePanel');
@@ -213,34 +206,38 @@
   const timerBtn=$('timerBtn'), micBtn=$('micBtn'),
         particlesWrap=$('particles'), glow=$('glow');
 
-  // ====== 状态 ======
   let audioCtx=null, analyser=null, micStream=null, dataArr=null, rafId=null;
   let smoothed=55, micOn=false, threshold=80;
   let timerId=null, timerRemain=0, timerRunning=false;
-  const MIN=40, MAX=120; // 色条映射范围（刻度 50/70/90/110 均匀）
+  const MIN=40, MAX=120;
 
-  // ====== 生成全屏分散弹跳粒子 ======
+  // 全屏分散弹跳粒子
   const PARTICLE_N=24;
   const particles=[];
   for(let i=0;i<PARTICLE_N;i++){
     const p=document.createElement('div'); p.className='particle';
-    const base=14+Math.random()*30;            // 直径 14~44，更大更明显
+    const base=14+Math.random()*30;
     p.style.width=p.style.height=base+'px';
-    const left=4+Math.random()*90;             // 水平 4%~94%
-    const top=6+Math.random()*84;              // 垂直 6%~90%
+    const left=4+Math.random()*90, top=6+Math.random()*84;
     p.style.left=left+'%'; p.style.top=top+'%';
-    const hue=Math.floor(15+Math.random()*115);// 橙红~绿 随机散布，呼应音量条
+    const hue=Math.floor(15+Math.random()*115);
     p.style.background='radial-gradient(circle at 34% 30%, rgba(255,255,255,.95), hsl('+hue+',85%,55%) 58%, hsl('+hue+',85%,38%))';
     particlesWrap.appendChild(p);
-    particles.push({el:p, phase:Math.random()*Math.PI*2, k:0.6+Math.random()*0.7, base});
+    particles.push({el:p, phase:Math.random()*Math.PI*2, k:0.6+Math.random()*0.7});
   }
 
-  // ====== 提示函数 ======
   function setBadgeOff(){
     micBtn.classList.add('show');
     badge.className='off';
     badgeText.textContent='未开启麦克风，点「开启麦克风」测分贝';
+    statusEl.className='warn';
+    statusEl.textContent='麦克风未开启 · 点「开启麦克风」授权';
   }
+  function setStatusOK(v){
+    statusEl.className='ok';
+    statusEl.textContent='实时测量中 · ' + v + ' dB · 已授权';
+  }
+
   function gatePrompt(){
     gateTitle.textContent='需要麦克风权限';
     gateSub.textContent='点击下方按钮开启；也可点「先看主界面」先浏览';
@@ -252,7 +249,6 @@
     gateBtn.textContent='重试';
     gateTip.innerHTML='❌ '+msg+'<br>若地址栏出现 🎤 图标请选「允许」。';
   }
-
   function errHint(n){
     switch(n){
       case 'NotAllowedError': return '你拒绝了授权，或浏览器策略拦截。请点地址栏左侧 🎤/🔒 图标选「允许」后重试。';
@@ -264,7 +260,7 @@
     }
   }
 
-  // ====== 麦克风 ======
+  // ====== 麦克风（修复：去掉误杀式超时；分析器接零音量输出保证数据处理） ======
   async function initMic(){
     if(micOn) return;
     if(!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)){
@@ -273,35 +269,41 @@
     }
     try{
       gateTitle.textContent='正在请求麦克风权限…'; gateTip.innerHTML='';
-      const p=navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}});
-      const t=new Promise((_,rej)=>setTimeout(()=>rej(new DOMException('TimeoutError')),4000));
-      micStream=await Promise.race([p,t]);
+      // 直接等待授权，不强行超时（避免用户允许稍慢被误判为失败）
+      micStream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}});
       audioCtx=new (window.AudioContext||window.webkitAudioContext)();
       if(audioCtx.state==='suspended') await audioCtx.resume();
       const src=audioCtx.createMediaStreamSource(micStream);
-      analyser=audioCtx.createAnalyser(); analyser.fftSize=2048;
+      analyser=audioCtx.createAnalyser(); analyser.fftSize=2048; analyser.smoothingTimeConstant=0.5;
       src.connect(analyser);
+      // 关键：用零增益接 destination，既让分析器真正处理数据，又不会外放回声
+      const sink=audioCtx.createGain(); sink.gain.value=0;
+      analyser.connect(sink); sink.connect(audioCtx.destination);
       dataArr=new Float32Array(analyser.fftSize);
       micOn=true;
       gate.classList.add('hide');
       micBtn.classList.remove('show');
       badge.className='';
+      statusEl.className='ok';
+      statusEl.textContent='麦克风已开启，正在测量…';
     }catch(err){
       const name=err.name||err.message;
       const hint=errHint(name);
-      if(name==='NotAllowedError'||name==='SecurityError'){
-        gatePrompt(); // 保留遮罩让用户重试
-      } else {
-        gateFailMsg(hint);
-      }
+      micOn=false;
+      if(name==='NotAllowedError'||name==='SecurityError'){ gatePrompt(); }
+      else { gateFailMsg(hint); }
     }
   }
 
   function computeDB(){
-    analyser.getFloatTimeDomainData(dataArr);
+    if(!analyser || !dataArr) return 0;
     let sum=0;
-    for(let i=0;i<dataArr.length;i++){ const v=dataArr[i]; sum+=v*v; }
-    let db=20*Math.log10(Math.sqrt(sum/dataArr.length)+1e-7)+100;
+    try{
+      analyser.getFloatTimeDomainData(dataArr);
+      for(let i=0;i<dataArr.length;i++){ const v=dataArr[i]; sum+=v*v; }
+    }catch(e){ return 0; }
+    const rms=Math.sqrt(sum/dataArr.length);
+    let db=20*Math.log10(rms+1e-7)+100;
     if(!isFinite(db)||db<0) db=0; if(db>MAX) db=MAX;
     return db;
   }
@@ -320,25 +322,23 @@
       if(v>105){ badge.className='loud'; badgeText.textContent='⚠️ 音量过大，注意保护嗓子 ('+intPart+' dB)'; }
       else if(v>=threshold){ badge.className=''; badgeText.textContent='✅ 音量达标！继续保持 ('+intPart+' dB)'; }
       else { badge.className='low'; badgeText.textContent='🔊 音量过低！早读要大声，低于阈值 '+threshold+' dB'; }
+      setStatusOK(intPart);
     }
-    // 全屏散落粒子：弹跳幅度随音量剧烈变化，错峰成起伏；背景随音量发光
-    // 未授权/静音时 norm 仍>0（smoothed 初始55），保证小球明显持续弹跳
     const norm=Math.max(0,Math.min(1,(smoothed-MIN)/(110-MIN)));
-    const amp=46+norm*200;           // 基础46px，确保待机也明显跳动
-    const freq=1.3+norm*2.4;         // 声音越大弹得越急
+    const amp=46+norm*200;
+    const freq=1.3+norm*2.4;
     for(let i=0;i<particles.length;i++){
       const pt=particles[i];
-      const w=0.5+0.5*Math.sin(now*freq + pt.phase);   // 0~1，错峰起伏
+      const w=0.5+0.5*Math.sin(now*freq + pt.phase);
       const up=w*amp*pt.k;
-      const sc=0.6+0.7*norm+0.18*w;                    // 声音大时整体放大
+      const sc=0.6+0.7*norm+0.18*w;
       pt.el.style.transform='translateY('+(-up)+'px) scale('+sc.toFixed(3)+')';
-      pt.el.style.opacity=(0.45+0.5*norm).toFixed(3);   // 待机也有 0.45 透明度
+      pt.el.style.opacity=(0.45+0.5*norm).toFixed(3);
     }
-    glow.style.opacity=(0.05+norm*0.5).toFixed(3);     // 背景暖光随音量脉动
+    glow.style.opacity=(0.05+norm*0.5).toFixed(3);
     rafId=requestAnimationFrame(loop);
   }
 
-  // ====== 计时 ======
   function fmt(s){ return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0'); }
   function startCountdown(){
     if(timerRunning) return;
@@ -369,7 +369,6 @@
     }catch(e){}
   }
 
-  // ====== 事件 ======
   thRange.addEventListener('input',()=>{ threshold=parseInt(thRange.value,10); thVal.textContent=threshold; });
   gearBtn.addEventListener('click',()=>panel.classList.add('show'));
   timerBtn.addEventListener('click',()=>panel.classList.add('show'));
@@ -379,11 +378,9 @@
   startTimer.addEventListener('click',startCountdown);
   stopTimer.addEventListener('click',stopCountdown);
   gateBtn.addEventListener('click',initMic);
-  // 点遮罩空白处（非卡片）关闭遮罩，退回主界面，仍可手动开启麦克风
   gate.addEventListener('click',e=>{ if(e.target===gate){ gate.classList.add('hide'); setBadgeOff(); } });
   gateSkip.addEventListener('click',()=>{ gate.classList.add('hide'); setBadgeOff(); });
 
-  // 首次交互兜底（部分浏览器要求手势才弹授权）
   let bound=false;
   function bindGesture(){
     if(bound) return; bound=true;
@@ -392,10 +389,10 @@
   }
 
   window.addEventListener('load',()=>{
-    loop();            // 启动粒子动画（未授权时也有明显弹跳）
-    initMic();         // 尝试自动授权
+    loop();
+    initMic();
     bindGesture();
-    setTimeout(()=>{ if(!micOn) setBadgeOff(); }, 500); // 若未授权，确保主界面提示清晰
+    setTimeout(()=>{ if(!micOn) setBadgeOff(); }, 600);
   });
 })();
 </script>
